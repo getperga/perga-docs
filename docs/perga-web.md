@@ -13,31 +13,45 @@ The web client for the Perga personal organizer system. It connects to the [Perg
 
 Perga Web is a standalone SPA built with React and Vite. It communicates with Perga API using a configurable base URL and implements authentication, planner views, and user settings fully in the browser.
 
-## Features
+## Screenshots
 
-- Daily planner
-- Monthly and custom agendas
-- User authentication and settings
-- Responsive design with mobile support
-- Dark theme
+<p>
+  <img src="/static/img/planner_screenshot.png" alt="Planner" width="300" />
+  <span>&nbsp;&nbsp;&nbsp;</span>
+  <img src="/static/img/planner_weekly_screenshot.png" alt="Planner Weekly" width="300" />
+  <span>&nbsp;&nbsp;&nbsp;</span>
+  <img src="/static/img/notes_screenshot.png" alt="Notes" width="300" />
+</p>
 
 ## Demo
 
-Try the hosted demo:
-- https://demo.getperga.me/
+You can try out Perga without installation by visiting demo version at [https://demo.getperga.me/](https://demo.getperga.me/).
+
+## Features
+
+- Daily planner + weekly view
+- Monthly and custom agendas
+- Projects (organize agendas and notes)
+- Notes (folders, import/export, and @notes references)
+- User authentication and settings
+- Responsive design with mobile support
+- PWA support
+- Dark theme
 
 ## Tech Stack
 
-- React 19
-- TypeScript (~5.7)
-- Vite 6
-- Tailwind CSS 4
-- React Router 7
-- Axios 1
+- React 19.0
+- TypeScript (~5.7.2)
+- Vite 6.3
+- Tailwind CSS 4.1
+- React Router 7.4
+- Axios 1.8
+- Prettier 3.3
+- ESLint 9.21
 
 ## Requirements
 
-- Node.js 20+ (Docker uses `node:20-alpine`)
+- Node.js 18+ (Docker uses `node:20-alpine`)
 - npm 8+ (project uses npm; a `package-lock.json` is included)
 
 ## Environment variables
@@ -74,11 +88,11 @@ Start the Vite development server (defaults to http://localhost:5173):
 npm run dev
 ```
 
-Code quality:
+Code quality and formatting (ESLint & Prettier):
 ```bash
-npm run lint
-npm run format       # write
-npm run format:check # check only
+npm run lint         # check linting
+npm run format       # write formatting
+npm run format:check # check formatting only
 ```
 
 ## Build & Preview
@@ -126,6 +140,7 @@ perga-web/
 │   ├── sections/         # Main application sections
 │   │   ├── auth/         # Authentication components
 │   │   ├── planner/      # Planning functionality
+│   │   ├── notes/        # Notes functionality
 │   │   └── settings/     # User settings
 │   ├── App.tsx           # Main application component
 │   └── main.tsx          # Application entry point
@@ -140,9 +155,33 @@ perga-web/
 └── vite.config.ts        # Vite configuration and path aliases
 ```
 
-## Path Aliases
+## Testing
 
-The project uses path aliases (defined in `vite.config.ts`) to simplify imports:
+The project uses [Vitest](https://vitest.dev/) for unit and component testing.
+
+Run all tests:
+```bash
+npm run test
+```
+
+Run tests in watch mode:
+```bash
+npm run test:watch
+```
+
+Run tests with coverage:
+```bash
+npm run test:coverage
+```
+
+## Notes Section
+
+The Notes section provides a comprehensive system for personal knowledge management:
+
+- **Folders**: Organize notes into hierarchical folders.
+- **Import/Export**: Support for Markdown, HTML, and PDF (export only).
+
+## Path Aliases
 
 - `@` → `src`
 - `@api` → `src/api`
@@ -152,6 +191,7 @@ The project uses path aliases (defined in `vite.config.ts`) to simplify imports:
 - `@sections` → `src/sections`
 - `@auth` → `src/sections/auth`
 - `@planner` → `src/sections/planner`
+- `@notes` → `src/sections/notes`
 - `@settings` → `src/sections/settings`
 
 ## CI

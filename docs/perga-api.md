@@ -18,9 +18,10 @@ Perga API is a FastAPI-based backend that powers the Perga personal organizer. I
 
 - Daily planner
 - Monthly and custom agendas
+- Notes
 - RESTful API with FastAPI
 - User authentication with JWT tokens
-- Interactive docs (Swagger UI / ReDoc)
+- API Documentation with Swagger UI
 
 ## Demo and Documentation
 
@@ -29,18 +30,18 @@ Perga API is a FastAPI-based backend that powers the Perga personal organizer. I
 
 ## Tech Stack
 
-- FastAPI
-- SQLAlchemy
-- Alembic
-- PostgreSQL
-- Pydantic Settings
-- JWT-based auth
-- Pytest
+- **Framework:** [FastAPI](https://fastapi.tiangolo.com/) 0.135
+- **Database:** [PostgreSQL](https://www.postgresql.org/) 15 with [SQLAlchemy](https://www.sqlalchemy.org/) 2.0
+- **Migrations:** [Alembic](https://alembic.sqlalchemy.org/) 1.18
+- **Validation:** [Pydantic](https://docs.pydantic.dev/) 2.12
+- **Authentication:** JWT (JSON Web Tokens)
+- **Containerization:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ## Requirements
 
 - Python 3.10+
-- PostgreSQL 15+
+- PostgreSQL
+- Docker (optional)
 
 ## Installation (local)
 
@@ -52,13 +53,13 @@ cd perga-api
 
 2) Create and activate a virtual environment
 ```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
 ```
 
 3) Install dependencies
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt -r requirements-dev.txt
 ```
 
 4) Configure environment
@@ -142,6 +143,21 @@ Agenda items:
 - `POST /api/v1/planner/agendas/items/reorder/` — Reorder items within an agenda
 - `POST /api/v1/planner/agendas/items/{item_id}/copy/` — Copy an item (optionally to another agenda)
 - `POST /api/v1/planner/agendas/items/{item_id}/move/` — Move an item to another agenda
+
+### Notes
+- `POST /api/v1/notes/` — Create a new note
+- `GET /api/v1/notes/{note_id}/` — Get a note by ID
+- `PATCH /api/v1/notes/{note_id}/` — Update a note (partial)
+
+#### Notes Folders
+- `GET /api/v1/notes/folders/` — Get all folders for the current user
+- `POST /api/v1/notes/folders/` — Create a new folder
+- `PATCH /api/v1/notes/folders/{folder_id}/` — Update a folder
+- `POST /api/v1/notes/folders/empty-trash/` — Permanently delete all notes and folders in the trash
+
+#### Notes Import & Export
+- `GET /api/v1/notes/export/` — Export notes (HTML, Markdown, or PDF)
+- `POST /api/v1/notes/import/` — Import notes from files (ZIP, HTML, or Markdown)
 
 ## Development
 
