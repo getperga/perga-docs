@@ -16,13 +16,13 @@ Perga consists of two main components:
 ## Screenshots
 
 <p>
-  <img src="/static/img/planner_screenshot.png" alt="Planner" width="300" />
+  <img src="/img/planner_screenshot.png" alt="Planner" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/static/img/planner_weekly_screenshot.png" alt="Planner Weekly" width="300" />
+  <img src="/img/planner_weekly_screenshot.png" alt="Planner Weekly" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/static/img/notes_screenshot.png" alt="Notes" width="300" />
+  <img src="/img/notes_screenshot.png" alt="Notes" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/static/img/api_screenshot.png" alt="API" width="300" />
+  <img src="/img/api_screenshot.png" alt="API" width="300" />
 </p>
 
 ## Demo

@@ -16,11 +16,11 @@ Perga Web is a standalone SPA built with React and Vite. It communicates with Pe
 ## Screenshots
 
 <p>
-  <img src="/static/img/planner_screenshot.png" alt="Planner" width="300" />
+  <img src="/img/planner_screenshot.png" alt="Planner" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/static/img/planner_weekly_screenshot.png" alt="Planner Weekly" width="300" />
+  <img src="/img/planner_weekly_screenshot.png" alt="Planner Weekly" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/static/img/notes_screenshot.png" alt="Notes" width="300" />
+  <img src="/img/notes_screenshot.png" alt="Notes" width="300" />
 </p>
 
 ## Demo
