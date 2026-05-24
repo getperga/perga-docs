@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.8.1">
 <title data-rh="true">Perga API | Perga</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.getperga.me/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://docs.getperga.me/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://docs.getperga.me/docs/perga-api"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Perga API | Perga"><meta data-rh="true" name="description" content="License: MIT"><meta data-rh="true" property="og:description" content="License: MIT"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://docs.getperga.me/docs/perga-api"><link data-rh="true" rel="alternate" href="https://docs.getperga.me/docs/perga-api" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.getperga.me/docs/perga-api" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Perga API","item":"https://docs.getperga.me/docs/perga-api"}]}</script><link rel="stylesheet" href="/assets/css/styles.31af50c4.css">
-<script src="/assets/js/runtime~main.230ddc0b.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.e36f3e7f.js" defer="defer"></script>
 <script src="/assets/js/main.631915de.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -69,6 +69,9 @@
 <li><code>SECRET_KEY</code> — any secure random string</li>
 <li><code>POSTGRES_HOST</code>, <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code></li>
 <li><code>CORS_ORIGINS</code> — JSON array of allowed origins (e.g. [&quot;http://localhost:5173&quot;])</li>
+<li><code>IS_SIGNUP_DISABLED</code> — when <code>True</code>, disables the signup endpoint</li>
+<li><code>GOOGLE_CLIENT_ID</code> — Google OAuth 2.0 Client ID (for &quot;Sign in with Google&quot;)</li>
+<li><code>GOOGLE_CLIENT_SECRET</code> — Google OAuth 2.0 Client Secret</li>
 <li><code>ROOT_URL_REDIRECT</code> — optional URL to redirect <code>/</code> to (used by nginx demo)</li>
 </ul>
 <ol start="5">
