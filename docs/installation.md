@@ -51,6 +51,8 @@ Env vars:
 - `API_BASE_URL` — Web → API URL (default `http://127.0.0.1:8000/api/v1`)
 - `CORS_ORIGINS`, `SECRET_KEY` — API security (use a strong random secret)
 - `IS_SIGNUP_DISABLED` — set `true` to disable self‑signup
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — Google OAuth 2.0 credentials used by the API to verify "Sign in with Google" tokens. Leave empty to disable Google sign‑in.
+- `GOOGLE_CLIENT_ID` (Web) — same Client ID exposed to the web client to render the "Sign in with Google" button.
 
 3) Start services
 ```bash

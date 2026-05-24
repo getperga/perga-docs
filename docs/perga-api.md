@@ -70,7 +70,10 @@ cp .env.example .env
 Important variables (from `.env.example`):
 - `SECRET_KEY` — any secure random string
 - `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
-- `CORS_ORIGINS` — JSON array of allowed origins (e.g. ["http://localhost:5173"]) 
+- `CORS_ORIGINS` — JSON array of allowed origins (e.g. ["http://localhost:5173"])
+- `IS_SIGNUP_DISABLED` — when `True`, disables the signup endpoint
+- `GOOGLE_CLIENT_ID` — Google OAuth 2.0 Client ID (for "Sign in with Google")
+- `GOOGLE_CLIENT_SECRET` — Google OAuth 2.0 Client Secret
 - `ROOT_URL_REDIRECT` — optional URL to redirect `/` to (used by nginx demo)
 
 5) Run migrations

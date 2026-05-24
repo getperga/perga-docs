@@ -63,6 +63,7 @@ cp .env.example .env
 Available variables:
 - `API_BASE_URL` — Base URL of Perga API (example: `http://127.0.0.1:8000/api/v1`)
 - `IS_SIGNUP_DISABLED` — When `true`, hides/disables the Signup option in the UI
+- `GOOGLE_CLIENT_ID` — Google OAuth 2.0 Client ID; enables the "Sign in with Google" button when set. Must match the `GOOGLE_CLIENT_ID` configured in Perga API.
 
 ## Installation
 
