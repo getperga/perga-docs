@@ -6,12 +6,12 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Perga',
-  tagline: 'Personal organizer that helps you plan and organize your days and months efficiently',
+  tagline: 'A personal workspace for your notes, plans, and ideas',
   url: 'https://docs.getperga.me',
   baseUrl: '/',
 
   favicon: 'img/favicon.ico',
-  organizationName: 'dbtiunov',
+  organizationName: 'getperga',
   projectName: 'perga-docs',
 
   deploymentBranch: 'gh-pages',
@@ -42,7 +42,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/dbtiunov/perga-docs/tree/main/',
+            'https://github.com/getperga/perga-docs/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -53,7 +53,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/dbtiunov/perga-docs/tree/main/',
+            'https://github.com/getperga/perga-docs/tree/main/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -117,11 +117,11 @@ const config: Config = {
           items: [
             {
               label: 'Perga API Repo',
-              href: 'https://github.com/dbtiunov/perga-api',
+              href: 'https://github.com/getperga/perga-api',
             },
             {
               label: 'Perga Web Repo',
-              href: 'https://github.com/dbtiunov/perga-web',
+              href: 'https://github.com/getperga/perga-web',
             },
           ],
         },

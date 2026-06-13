@@ -4,14 +4,14 @@ sidebar_position: 1
 
 # Introduction to Perga
 
-Perga is a personal organizer that helps you plan and organize your days and months efficiently.
+Perga is a personal workspace for your notes, plans, and ideas.
 
 ## Project Components
 
 Perga consists of two main components:
 
-1. **[Perga API](https://github.com/dbtiunov/perga-api)**: The backend service providing the core functionality and data storage.
-2. **[Perga Web](https://github.com/dbtiunov/perga-web)**: A standalone browser client that connects to the backend to provide a user-friendly web interface.
+1. **[Perga API](https://github.com/getperga/perga-api)**: The backend service providing the core functionality and data storage.
+2. **[Perga Web](https://github.com/getperga/perga-web)**: A standalone browser client that connects to the backend to provide a user-friendly web interface.
 
 ## Screenshots
 

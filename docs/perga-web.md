@@ -5,9 +5,9 @@ sidebar_position: 3
 # Perga Web
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Build](https://github.com/dbtiunov/perga-web/actions/workflows/ci.yml/badge.svg)
+![Build](https://github.com/getperga/perga-web/actions/workflows/ci.yml/badge.svg)
 
-The web client for the Perga personal organizer system. It connects to the [Perga API](./perga-api) and provides a responsive, accessible interface for daily planning and monthly agendas.
+The web client for the Perga. It connects to the [Perga API](./perga-api) and provides a responsive, accessible interface for daily planning and notes.
 
 ## Overview
 
@@ -31,8 +31,7 @@ You can try out Perga without installation by visiting demo version at [https://
 
 - Daily planner + weekly view
 - Monthly and custom agendas
-- Projects (organize agendas and notes)
-- Notes (folders, import/export, and @notes references)
+- Notes (folders, import/export)
 - User authentication and settings
 - Responsive design with mobile support
 - PWA support
@@ -69,7 +68,7 @@ Available variables:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/dbtiunov/perga-web.git
+   git clone https://github.com/getperga/perga-web.git
    cd perga-web
    ```
 2. Install dependencies:
@@ -199,7 +198,7 @@ The Notes section provides a comprehensive system for personal knowledge managem
 
 GitHub Actions workflow: `.github/workflows/ci.yml`
 
-Badge: ![Build](https://github.com/dbtiunov/perga-web/actions/workflows/ci.yml/badge.svg)
+Badge: ![Build](https://github.com/getperga/perga-web/actions/workflows/ci.yml/badge.svg)
 
 ## Troubleshooting
 
@@ -209,4 +208,4 @@ Badge: ![Build](https://github.com/dbtiunov/perga-web/actions/workflows/ci.yml/b
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/dbtiunov/perga-web/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/getperga/perga-web/blob/main/LICENSE) file for details.

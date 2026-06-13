@@ -6,13 +6,13 @@ sidebar_position: 2
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10-blue.svg)
-![Build](https://github.com/dbtiunov/perga-api/actions/workflows/ci.yml/badge.svg)
+![Build](https://github.com/getperga/perga-api/actions/workflows/ci.yml/badge.svg)
 
-Personal organizer backend that provides the core functionality for the Perga system.
+Backend API that provides the core functionality for the Perga system.
 
 ## Overview
 
-Perga API is a FastAPI-based backend that powers the Perga personal organizer. It exposes REST API consumed by the standalone web client [Perga Web](./perga-web).
+Perga API is a FastAPI-based backend that powers the Perga. It exposes REST API consumed by the standalone web client [Perga Web](./perga-web).
 
 ## Features
 
@@ -26,7 +26,7 @@ Perga API is a FastAPI-based backend that powers the Perga personal organizer. I
 ## Demo and Documentation
 
 - Demo: https://demo.getperga.me/
-- Repo: https://github.com/dbtiunov/perga-api
+- Repo: https://github.com/getperga/perga-api
 
 ## Tech Stack
 
@@ -47,7 +47,7 @@ Perga API is a FastAPI-based backend that powers the Perga personal organizer. I
 
 1) Clone and enter the repo
 ```bash
-git clone https://github.com/dbtiunov/perga-api.git
+git clone https://github.com/getperga/perga-api.git
 cd perga-api
 ```
 
@@ -189,4 +189,4 @@ alembic upgrade head
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/dbtiunov/perga-api/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/getperga/perga-api/blob/main/LICENSE) file for details.
