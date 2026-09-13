@@ -85,5 +85,5 @@ echo "Done! You can access Perga now:"
 print_link "Web UI" "http://localhost:3000"
 print_link "API docs" "http://localhost:8000/docs"
 
-echo "To stop Perga, run: docker-compose down"
-echo "To view logs, run:  docker-compose logs -f"
+echo "To stop Perga, run: docker compose down"
+echo "To view logs, run:  docker compose logs -f"

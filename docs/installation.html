@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.8.1">
 <title data-rh="true">Installation Guide | Perga</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.getperga.me/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://docs.getperga.me/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://docs.getperga.me/docs/installation"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Installation Guide | Perga"><meta data-rh="true" name="description" content="Run Perga locally with Docker in two ways:"><meta data-rh="true" property="og:description" content="Run Perga locally with Docker in two ways:"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://docs.getperga.me/docs/installation"><link data-rh="true" rel="alternate" href="https://docs.getperga.me/docs/installation" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.getperga.me/docs/installation" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Installation Guide","item":"https://docs.getperga.me/docs/installation"}]}</script><link rel="stylesheet" href="/assets/css/styles.31af50c4.css">
-<script src="/assets/js/runtime~main.b8342b87.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.d449578a.js" defer="defer"></script>
 <script src="/assets/js/main.cb6a002b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -27,7 +27,7 @@
 <div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">./install.sh</span><br></span></code></pre></div></div>
 <p>Notes:</p>
 <ul>
-<li>You can customize .env and nginx.conf files, and then run install script again.</li>
+<li>You can customize <code>.env</code> and <code>nginx/nginx.conf</code>, then run the installation script again.</li>
 </ul>
 <ol start="3">
 <li>Verify and access</li>
@@ -48,6 +48,8 @@
 <p>Env vars:</p>
 <ul>
 <li><code>POSTGRES_*</code> — Postgres DB host, name and credentials</li>
+<li><code>SQLALCHEMY_POOL_SIZE</code>, <code>SQLALCHEMY_MAX_OVERFLOW</code> — API database connection pool capacity</li>
+<li><code>SQLALCHEMY_POOL_TIMEOUT</code>, <code>SQLALCHEMY_POOL_RECYCLE</code> — connection wait and recycle times in seconds</li>
 <li><code>API_BASE_URL</code> — Web → API URL (default <code>http://127.0.0.1:8000/api/v1</code>)</li>
 <li><code>CORS_ORIGINS</code>, <code>SECRET_KEY</code> — API security (use a strong random secret)</li>
 <li><code>IS_SIGNUP_DISABLED</code> — set <code>true</code> to disable self‑signup</li>
@@ -57,7 +59,7 @@
 <ol start="3">
 <li>Start services</li>
 </ol>
-<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">docker compose pull</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker compose up -d</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># check status</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker compose ps</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># stop perga</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker-compose down</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># view logs</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker-compose logs -f</span><br></span></code></pre></div></div>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">docker compose pull</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker compose up -d</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># check status</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker compose ps</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># stop perga</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker compose down</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># view logs</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">docker compose logs -f</span><br></span></code></pre></div></div>
 <ol start="4">
 <li>Verify and access</li>
 </ol>
