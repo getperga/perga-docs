@@ -4,10 +4,11 @@ sidebar_position: 3
 
 # Perga Web
 
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Build](https://github.com/getperga/perga-web/actions/workflows/ci.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/getperga/perga-web/blob/main/LICENSE)
+![Node.js](https://img.shields.io/badge/Node.js-20-green.svg)
+[![CI](https://github.com/getperga/perga-web/actions/workflows/ci.yml/badge.svg)](https://github.com/getperga/perga-web/actions/workflows/ci.yml)
 
-The web client for the Perga. It connects to the [Perga API](./perga-api) and provides a responsive, accessible interface for daily planning and notes.
+The browser client for Perga. It connects to the [Perga API](./perga-api) and provides a responsive interface for daily planning and notes.
 
 ## Overview
 
@@ -25,14 +26,14 @@ Perga Web is a standalone SPA built with React and Vite. It communicates with Pe
 
 ## Demo
 
-You can try out Perga without installation by visiting demo version at [https://demo.getperga.me/](https://demo.getperga.me/).
+Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/).
 
 ## Features
 
-- Daily planner + weekly view
+- Daily planning
 - Monthly and custom agendas
-- Notes (folders, import/export)
-- User authentication and settings
+- Notes with folders, import, export, and full-text search
+- User authentication, including Google sign-in
 - Responsive design with mobile support
 - PWA support
 - Dark theme
@@ -43,6 +44,7 @@ You can try out Perga without installation by visiting demo version at [https://
 - TypeScript (~5.7.2)
 - Vite 6.3
 - Tailwind CSS 4.1
+- Tiptap 3.20
 - React Router 7.4
 - Axios 1.8
 - Prettier 3.3
@@ -50,7 +52,7 @@ You can try out Perga without installation by visiting demo version at [https://
 
 ## Requirements
 
-- Node.js 18+ (Docker uses `node:20-alpine`)
+- Node.js 20 (the Docker build uses `node:20-alpine`)
 - npm 8+ (project uses npm; a `package-lock.json` is included)
 
 ## Environment variables
@@ -115,10 +117,10 @@ The app can be built and served by nginx using Docker Compose.
 
 ```bash
 # Build and start
-docker-compose up -d
+docker compose up -d
 
 # Stop
-docker-compose down
+docker compose down
 ```
 
 Defaults:
@@ -176,10 +178,11 @@ npm run test:coverage
 
 ## Notes Section
 
-The Notes section provides a comprehensive system for personal knowledge management:
+The Notes section provides tools for personal knowledge management:
 
 - **Folders**: Organize notes into hierarchical folders.
 - **Import/Export**: Support for Markdown, HTML, and PDF (export only).
+- **Search**: Search across note titles and contents.
 
 ## Path Aliases
 

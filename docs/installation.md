@@ -23,7 +23,7 @@ mkdir -p perga-install && cd perga-install && \
 ```
 
 Notes:
-- You can customize .env and nginx.conf files, and then run install script again.
+- You can customize `.env` and `nginx/nginx.conf`, then run the installation script again.
 
 3) Verify and access
 - Web UI: http://localhost:3000
@@ -48,6 +48,8 @@ cp .env.example .env
 ```
 Env vars:
 - `POSTGRES_*` — Postgres DB host, name and credentials
+- `SQLALCHEMY_POOL_SIZE`, `SQLALCHEMY_MAX_OVERFLOW` — API database connection pool capacity
+- `SQLALCHEMY_POOL_TIMEOUT`, `SQLALCHEMY_POOL_RECYCLE` — connection wait and recycle times in seconds
 - `API_BASE_URL` — Web → API URL (default `http://127.0.0.1:8000/api/v1`)
 - `CORS_ORIGINS`, `SECRET_KEY` — API security (use a strong random secret)
 - `IS_SIGNUP_DISABLED` — set `true` to disable self‑signup
@@ -63,10 +65,10 @@ docker compose up -d
 docker compose ps
 
 # stop perga
-docker-compose down
+docker compose down
 
 # view logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 4) Verify and access

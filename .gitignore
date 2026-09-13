@@ -13,13 +13,9 @@ dist-ssr
 *.local
 build/
 .docusaurus
-perga-api/
-perga-web/
-
 .env
 
 # IDE
 .vscode/
 .idea/
-.junie/
 .DS_Store

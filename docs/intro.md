@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Introduction to Perga
 
-Perga is a personal workspace for your notes, plans, and ideas.
+Perga is a personal workspace for notes, plans, and ideas.
 
 ## Project Components
 
@@ -16,32 +16,26 @@ Perga consists of two main components:
 ## Screenshots
 
 <p>
-  <img src="/img/planner_screenshot.png" alt="Planner" width="300" />
+  <img src="/img/planner_screenshot.png" alt="Daily planner" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/img/planner_weekly_screenshot.png" alt="Planner Weekly" width="300" />
+  <img src="/img/planner_weekly_screenshot.png" alt="Weekly planner" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
   <img src="/img/notes_screenshot.png" alt="Notes" width="300" />
   <span>&nbsp;&nbsp;&nbsp;</span>
-  <img src="/img/api_screenshot.png" alt="API" width="300" />
+  <img src="/img/api_screenshot.png" alt="Perga API" width="300" />
 </p>
 
 ## Demo
 
-You can try out Perga without installation by visiting demo version at [https://demo.getperga.me/](https://demo.getperga.me/).
+Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/).
 
 ## Features
 
-- **Daily planner**: Organize your daily tasks and activities
-- **Monthly and custom agendas**: Plan ahead and keep track of your monthly goals
-- **User authentication**: Secure access to your personal data
-- **Responsive design and dark theme**: Works on desktop and mobile devices
-
-## Roadmap
-
-* Projects
-* Inbox
-* Keyboard Shortcuts
-* Mobile App
+- **Daily planning**: Plan your days
+- **Monthly and custom agendas**: Plan ahead and keep long-term goals organized
+- **Notes**: Organize notes in folders, search their contents, and import or export them
+- **Authentication**: Sign in with a password or Google
+- **Responsive interface**: Use Perga on desktop or mobile, install it as a PWA, and switch to a dark theme
 
 ## Documentation Structure
 

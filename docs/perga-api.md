@@ -4,24 +4,23 @@ sidebar_position: 2
 
 # Perga API
 
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.10-blue.svg)
-![Build](https://github.com/getperga/perga-api/actions/workflows/ci.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/getperga/perga-api/blob/main/LICENSE)
+![Python](https://img.shields.io/badge/python-3.11-blue.svg)
+[![CI](https://github.com/getperga/perga-api/actions/workflows/ci.yml/badge.svg)](https://github.com/getperga/perga-api/actions/workflows/ci.yml)
 
-Backend API that provides the core functionality for the Perga system.
+The backend for Perga, a personal workspace for notes, plans, and ideas.
 
 ## Overview
 
-Perga API is a FastAPI-based backend that powers the Perga. It exposes REST API consumed by the standalone web client [Perga Web](./perga-web).
+Perga API is a FastAPI-based backend that powers Perga. It exposes a REST API consumed by the standalone browser client [Perga Web](./perga-web).
 
 ## Features
 
-- Daily planner
+- Daily planning
 - Monthly and custom agendas
-- Notes
-- RESTful API with FastAPI
-- User authentication with JWT tokens
-- API Documentation with Swagger UI
+- Notes management with folders, export and import
+- Full-text note search
+- User authentication with JWT tokens, including Google sign-in
 
 ## Demo and Documentation
 
@@ -39,7 +38,7 @@ Perga API is a FastAPI-based backend that powers the Perga. It exposes REST API 
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.11
 - PostgreSQL
 - Docker (optional)
 
@@ -70,6 +69,8 @@ cp .env.example .env
 Important variables (from `.env.example`):
 - `SECRET_KEY` — any secure random string
 - `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+- `SQLALCHEMY_POOL_SIZE`, `SQLALCHEMY_MAX_OVERFLOW` — database connection pool capacity
+- `SQLALCHEMY_POOL_TIMEOUT`, `SQLALCHEMY_POOL_RECYCLE` — connection wait and recycle times in seconds
 - `CORS_ORIGINS` — JSON array of allowed origins (e.g. ["http://localhost:5173"])
 - `IS_SIGNUP_DISABLED` — when `True`, disables the signup endpoint
 - `GOOGLE_CLIENT_ID` — Google OAuth 2.0 Client ID (for "Sign in with Google")
@@ -97,9 +98,9 @@ A Docker Compose setup is included. It runs:
 
 Start/stop:
 ```bash
-docker-compose up -d
+docker compose up -d
 # ...
-docker-compose down
+docker compose down
 ```
 
 Default ports and health:
@@ -149,6 +150,7 @@ Agenda items:
 
 ### Notes
 - `POST /api/v1/notes/` — Create a new note
+- `GET /api/v1/notes/search/?query=...` — Search note titles and contents
 - `GET /api/v1/notes/{note_id}/` — Get a note by ID
 - `PATCH /api/v1/notes/{note_id}/` — Update a note (partial)
 
