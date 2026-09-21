@@ -50,10 +50,24 @@ print_link() {
 
 echo "Installing Perga..."
 
+download_file() {
+  url="$1"
+  destination="$2"
+  temporary_file="${destination}.tmp"
+
+  curl -fsSL -o "$temporary_file" "$url"
+  mv "$temporary_file" "$destination"
+}
+
+is_new_install=false
+
 # Ensure docker-compose.yml exists; fetch if missing
 if [ ! -f docker-compose.yml ]; then
+  is_new_install=true
   echo "Fetching docker-compose.yml..."
-  curl -fsSL -o docker-compose.yml https://docs.getperga.me/installation/docker-compose.yml
+  download_file \
+    https://docs.getperga.me/installation/docker-compose.yml \
+    docker-compose.yml
   echo "docker-compose.yml downloaded."
 fi
 
@@ -61,14 +75,18 @@ fi
 mkdir -p nginx
 if [ ! -f nginx/nginx.conf ]; then
   echo "Fetching default nginx.conf..."
-  curl -fsSL -o nginx/nginx.conf https://docs.getperga.me/installation/nginx/nginx.conf
+  download_file \
+    https://docs.getperga.me/installation/nginx/nginx.conf \
+    nginx/nginx.conf
   echo "nginx/nginx.conf downloaded. You can customize it if needed."
 fi
 
 # Ensure .env.example exists; fetch if missing
 if [ ! -f .env.example ]; then
   echo "Fetching .env.example..."
-  curl -fsSL -o .env.example https://docs.getperga.me/installation/.env.example
+  download_file \
+    https://docs.getperga.me/installation/.env.example \
+    .env.example
   echo ".env.example downloaded."
 fi
 
@@ -78,7 +96,16 @@ if [ ! -f .env ]; then
   echo ".env created from .env.example. You can customize it if needed."
 fi
 
-docker compose pull
+if [ "$is_new_install" = true ]; then
+  docker compose pull
+else
+  echo "Existing installation detected."
+  echo "Configuration and images will not be updated."
+  print_link \
+    "Update instructions" \
+    "https://docs.getperga.me/docs/installation#update-perga"
+fi
+
 docker compose up -d
 
 echo "Done! You can access Perga now:"
