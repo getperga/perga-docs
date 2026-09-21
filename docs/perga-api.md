@@ -30,7 +30,7 @@ Perga API is a FastAPI-based backend that powers Perga. It exposes a REST API co
 ## Tech Stack
 
 - **Framework:** [FastAPI](https://fastapi.tiangolo.com/) 0.135
-- **Database:** [PostgreSQL](https://www.postgresql.org/) 15 with [SQLAlchemy](https://www.sqlalchemy.org/) 2.0
+- **Database:** [PostgreSQL](https://www.postgresql.org/) 16 with [SQLAlchemy](https://www.sqlalchemy.org/) 2.0
 - **Migrations:** [Alembic](https://alembic.sqlalchemy.org/) 1.18
 - **Validation:** [Pydantic](https://docs.pydantic.dev/) 2.12
 - **Authentication:** JWT (JSON Web Tokens)
@@ -92,7 +92,7 @@ uvicorn app.main:app --reload
 ## Docker
 
 A Docker Compose setup is included. It runs:
-- `db`: PostgreSQL 15
+- `db`: PostgreSQL 16
 - `app`: the FastAPI app (exposed on host port 8000)
 - `nginx`: reverse proxy that serves the app on host port 8080
 
