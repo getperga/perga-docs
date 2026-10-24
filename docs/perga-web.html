@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.8.1">
 <title data-rh="true">Perga Web | Perga</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.getperga.me/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://docs.getperga.me/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://docs.getperga.me/docs/perga-web"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Perga Web | Perga"><meta data-rh="true" name="description" content="License: MIT"><meta data-rh="true" property="og:description" content="License: MIT"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://docs.getperga.me/docs/perga-web"><link data-rh="true" rel="alternate" href="https://docs.getperga.me/docs/perga-web" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.getperga.me/docs/perga-web" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Perga Web","item":"https://docs.getperga.me/docs/perga-web"}]}</script><link rel="stylesheet" href="/assets/css/styles.31af50c4.css">
-<script src="/assets/js/runtime~main.6d7d9c5f.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.fcd45eaf.js" defer="defer"></script>
 <script src="/assets/js/main.cb6a002b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -26,7 +26,7 @@
 <ul>
 <li>Daily planning</li>
 <li>Monthly and custom agendas</li>
-<li>Notes with folders, import, export, and full-text search</li>
+<li>Notes with folders, pinned notes, import, export, and full-text search</li>
 <li>User authentication, including Google sign-in</li>
 <li>Responsive design with mobile support</li>
 <li>PWA support</li>
@@ -105,9 +105,18 @@
 <p>The Notes section provides tools for personal knowledge management:</p>
 <ul>
 <li><strong>Folders</strong>: Organize notes into hierarchical folders.</li>
+<li><strong>Pinned notes</strong>: Pin or unpin a note from its folder-tree menu or the editor
+toolbar. On desktop, pinned notes appear in a collapsible panel on the right;
+the panel remembers whether it was open. On mobile, use the pin button in the
+Notes header to open the same list in a drawer.</li>
 <li><strong>Import/Export</strong>: Support for Markdown, HTML, and PDF (export only).</li>
 <li><strong>Search</strong>: Search across note titles and contents.</li>
 </ul>
+<p>Pinned notes are ordered by most recent update and include their folder path.
+Moving a pinned note to Trash hides it from the pinned list without clearing its
+pinned state, so it reappears after restoration. Pin and unpin actions are
+unavailable while browsing Trash. Use the note&#x27;s <strong>Restore</strong> action to move it
+back to the root Notes folder.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="path-aliases">Path Aliases<a href="#path-aliases" class="hash-link" aria-label="Direct link to Path Aliases" title="Direct link to Path Aliases">​</a></h2>
 <ul>
 <li><code>@</code> → <code>src</code></li>
