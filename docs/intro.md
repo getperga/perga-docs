@@ -33,7 +33,8 @@ Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/)
 
 - **Daily planning**: Plan your days
 - **Monthly and custom agendas**: Plan ahead and keep long-term goals organized
-- **Notes**: Organize notes in folders, search their contents, and import or export them
+- **Notes**: Organize notes in folders, pin important notes for quick access,
+  search their contents, and import or export them
 - **Authentication**: Sign in with a password or Google
 - **Responsive interface**: Use Perga on desktop or mobile, install it as a PWA, and switch to a dark theme
 

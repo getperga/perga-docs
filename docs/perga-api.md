@@ -152,7 +152,8 @@ Agenda items:
 - `POST /api/v1/notes/` — Create a new note
 - `GET /api/v1/notes/search/?query=...` — Search note titles and contents
 - `GET /api/v1/notes/{note_id}/` — Get a note by ID
-- `PATCH /api/v1/notes/{note_id}/` — Update a note (partial)
+- `PATCH /api/v1/notes/{note_id}/` — Update a note (partial), including its
+  `is_pinned` state
 
 #### Notes Folders
 - `GET /api/v1/notes/folders/` — Get all folders for the current user

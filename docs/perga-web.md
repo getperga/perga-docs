@@ -32,7 +32,7 @@ Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/)
 
 - Daily planning
 - Monthly and custom agendas
-- Notes with folders, import, export, and full-text search
+- Notes with folders, pinned notes, import, export, and full-text search
 - User authentication, including Google sign-in
 - Responsive design with mobile support
 - PWA support
@@ -181,8 +181,18 @@ npm run test:coverage
 The Notes section provides tools for personal knowledge management:
 
 - **Folders**: Organize notes into hierarchical folders.
+- **Pinned notes**: Pin or unpin a note from its folder-tree menu or the editor
+  toolbar. On desktop, pinned notes appear in a collapsible panel on the right;
+  the panel remembers whether it was open. On mobile, use the pin button in the
+  Notes header to open the same list in a drawer.
 - **Import/Export**: Support for Markdown, HTML, and PDF (export only).
 - **Search**: Search across note titles and contents.
+
+Pinned notes are ordered by most recent update and include their folder path.
+Moving a pinned note to Trash hides it from the pinned list without clearing its
+pinned state, so it reappears after restoration. Pin and unpin actions are
+unavailable while browsing Trash. Use the note's **Restore** action to move it
+back to the root Notes folder.
 
 ## Path Aliases
 
