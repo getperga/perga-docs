@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Installation and Self-Hosting Guide
-description: Install Perga with Docker Compose, prepare a public deployment, back up PostgreSQL, restore data, and update the services.
+description: Self-host Perga with Docker Compose. Set up the web client, API, and PostgreSQL, configure HTTPS for public access, and learn to back up, restore, and update.
 ---
 
 # Installation and self-hosting

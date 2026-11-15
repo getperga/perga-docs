@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+sidebar_label: Perga API
+title: REST API for the Perga Planner and Notes App
+description: Set up the FastAPI backend for Perga. Explore its REST API for daily planning, notes, and authentication, and configure PostgreSQL and attachment storage.
 ---
 
 # Perga API
@@ -19,6 +22,7 @@ Perga API is a FastAPI-based backend that powers Perga. It exposes a REST API co
 - Daily planning
 - Monthly and custom agendas
 - Notes management with folders, export and import
+- Notes Attachments with local or S3-compatible storage
 - Full-text note search
 - User authentication with JWT tokens, including Google sign-in
 
@@ -165,10 +169,16 @@ Agenda items:
 - `GET /api/v1/notes/export/` — Export notes (HTML, Markdown, or PDF)
 - `POST /api/v1/notes/import/` — Import notes from files (ZIP, HTML, or Markdown)
 
+#### Notes Attachments
+
+See [Notes Attachments](./note-attachments.md) for attachment endpoints,
+local/S3 storage configuration, limits, cleanup, and portable export/import.
+
 ## Development
 
 ### Project Structure
 - `app/`
+  - `commands/` — standalone maintenance commands, run with `python -m app.commands.<command>`
   - `api/` — API endpoints and routers
   - `core/` — config, DB
   - `models/` — SQLAlchemy models

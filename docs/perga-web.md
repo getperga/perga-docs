@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+sidebar_label: Perga Web
+title: Browser Client for the Perga Planner and Notes App
+description: Install and configure Perga Web, the React client for daily and weekly planning and organized notes. Connect the browser app to your own Perga API server.
 ---
 
 # Perga Web
@@ -193,6 +196,18 @@ Moving a pinned note to Trash hides it from the pinned list without clearing its
 pinned state, so it reappears after restoration. Pin and unpin actions are
 unavailable while browsing Trash. Use the note's **Restore** action to move it
 back to the root Notes folder.
+
+### Moving and duplicating content in the editor
+
+Press **Shift+Option+↑** or **Shift+Option+↓** on macOS (**Shift+Alt** with the
+same arrows on Windows and Linux) to move the block at the cursor up or down.
+If a selection spans several blocks, they move together and the selection stays
+with them. Inside a list, the shortcut moves items within that list.
+Wrapped lines and soft line breaks move together with their paragraph.
+
+Press **Cmd+D** on macOS to insert a copy of the current block, list item, or
+selected group immediately below the original. The cursor or selection moves
+to the copy.
 
 ## Path Aliases
 

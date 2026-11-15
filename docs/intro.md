@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: Explore Perga's daily planner, organized notes, and open-source components. See screenshots and find the installation guide for your own server.
 ---
 
 # Introduction to Perga
