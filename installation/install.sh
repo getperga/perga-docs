@@ -81,6 +81,14 @@ if [ ! -f nginx/nginx.conf ]; then
   echo "nginx/nginx.conf downloaded. You can customize it if needed."
 fi
 
+# fetch the stable nginx build recipe used to apply base-library security fixes
+if [ ! -f nginx/Dockerfile ]; then
+  echo "Fetching nginx Dockerfile..."
+  download_file \
+    https://docs.getperga.me/installation/nginx/Dockerfile \
+    nginx/Dockerfile
+fi
+
 # Ensure .env.example exists; fetch if missing
 if [ ! -f .env.example ]; then
   echo "Fetching .env.example..."
@@ -92,8 +100,21 @@ fi
 
 # Ensure .env exists
 if [ ! -f .env ]; then
-  cp .env.example .env
-  echo ".env created from .env.example. You can customize it if needed."
+  if ! command -v openssl >/dev/null 2>&1; then
+    echo "Install openssl to generate installation credentials, or prepare .env manually." >&2
+    exit 1
+  fi
+  signing_secret="$(openssl rand -hex 32)"
+  database_password="$(openssl rand -hex 32)"
+  (
+    umask 077
+    sed -e "s/^SECRET_KEY=.*/SECRET_KEY=$signing_secret/" \
+        -e "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$database_password/" \
+        .env.example > .env.tmp
+    mv .env.tmp .env
+  )
+  unset signing_secret database_password
+  echo ".env created with fresh installation credentials."
 fi
 
 if [ "$is_new_install" = true ]; then

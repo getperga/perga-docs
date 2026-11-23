@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:16.16-bookworm
     container_name: perga_db
     restart: always
     environment:
@@ -29,10 +29,9 @@ services:
     networks:
       - perga_network
     ports:
-      - "8000:8000"
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - attachments_data:/app/data/attachments
 
   web:
     image: ghcr.io/getperga/perga-web:latest
@@ -42,20 +41,22 @@ services:
       API_BASE_URL: ${API_BASE_URL}
       IS_SIGNUP_DISABLED: ${IS_SIGNUP_DISABLED}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      CSP_MODE: ${CSP_MODE:-report-only}
+      CSP_POLICY: ${CSP_POLICY:-}
     depends_on:
       - api
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
     networks:
       - perga_network
 
   nginx:
-    image: nginx:latest
+    build:
+      context: ./nginx
     container_name: perga_nginx
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
@@ -70,3 +71,4 @@ networks:
 
 volumes:
   postgres_data:
+  attachments_data:
