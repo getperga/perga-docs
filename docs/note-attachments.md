@@ -10,7 +10,7 @@ and S3 storage.
 
 ## Setup
 
-Install `requirements.txt` and run `alembic upgrade head` before serving requests.
+Install `docs/requirements.txt` and run `alembic upgrade head` before serving requests.
 
 The default backend is `ATTACHMENTS_STORAGE=local`, with files in
 `ATTACHMENTS_LOCAL_ROOT=./data/attachments` relative to the application working

@@ -5,7 +5,8 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 ## Installation
 
 ```bash
-npm install
+nvm use
+npm ci
 ```
 
 ## Local Development
@@ -25,6 +26,8 @@ npm run build
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
 ## Deployment
+
+Use the Node.js version in `.nvmrc`. Build from the reviewed source commit with `npm ci` and record the source and published Pages commits in the release notes.
 
 Using SSH:
 

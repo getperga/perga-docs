@@ -30,6 +30,8 @@ Perga consists of two main components:
 
 Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/).
 
+To run Perga on your own server, follow the [installation guide](./installation.md).
+
 ## Features
 
 - **Daily planning**: Plan your days

@@ -62,7 +62,7 @@ source venv/bin/activate   # Windows: venv\Scripts\activate
 
 3) Install dependencies
 ```bash
-pip install -r requirements.txt -r requirements-dev.txt
+pip install -r docs/requirements.txt -r docs/requirements-dev.txt
 ```
 
 4) Configure environment
@@ -95,6 +95,13 @@ uvicorn app.main:app --reload
 
 ## Docker
 
+A multi-stage build installs Python dependencies from wheels. The runtime image
+contains the libraries and fonts needed for PDF export and image handling,
+without compilers, development headers, pip, setuptools or wheel. To add a
+dependency, update `docs/requirements.txt` and the versions in
+`docs/constraints.txt`, then rebuild the image. The constraints keep unrelated
+transitive packages stable during security rebuilds.
+
 A Docker Compose setup is included. It runs:
 - `db`: PostgreSQL 16
 - `app`: the FastAPI app (exposed on host port 8000)
@@ -111,9 +118,17 @@ Default ports and health:
 - App direct: http://localhost:8000 (health: `GET /health/`)
 - Via nginx: http://localhost:8080 (health inside nginx: `GET /health/`)
 
+Keep port 8000 on loopback and route public traffic through nginx. Default
+per-IP limits are 10 requests/minute for password login and Google code
+exchange, and 5/minute for signup. Excess attempts return `429` with
+`Retry-After: 60`. Configure limits and trusted proxies in `nginx/nginx.conf`.
+
 ## API Documentation
 
 - Swagger UI: http://localhost:8080/docs (via nginx) or http://localhost:8000/docs (direct)
+
+Application logs go to stdout. For Compose deployments, use
+`docker compose logs api` from the combined installation directory.
 
 ## API Endpoints (v1)
 
@@ -121,10 +136,24 @@ Default ports and health:
 - `POST /api/v1/auth/signup/` — Register a new user
 - `POST /api/v1/auth/access_token/` — Get access token (form data)
 - `POST /api/v1/auth/access_token_json/` — Get access token (JSON)
-- `POST /api/v1/auth/refresh_token/` — Refresh access token
+- `POST /api/v1/auth/refresh_token/` — Refresh access token within the current session
+- `POST /api/v1/auth/logout/` — Revoke the current session using its refresh credential
 - `GET /api/v1/auth/user/` — Get current user
 - `PUT /api/v1/auth/user/` — Update current user
 - `PUT /api/v1/auth/user/password/` — Change password
+
+API clients send the access JWT as `Authorization: Bearer …` and send the
+refresh JWT in the JSON body when refreshing or signing out. A refresh
+credential has a fixed 30-day lifetime. Signing out revokes the current
+session. Password changes and account deactivation revoke all sessions.
+Clients signed in before this change must sign in again. Google sign-in
+requires a verified email and uses an existing Google subject to identify
+a linked account.
+
+Perga Web sends `X-Perga-Session: browser` from an allowed `Origin`. Its
+login, refresh and logout requests use an HttpOnly refresh cookie. Use the
+same site for Web and API, and include the exact Web origin in
+`CORS_ORIGINS`. HTTPS deployments use a Secure cookie.
 
 ### Planner Days
 - `GET /api/v1/planner/days/items/?days=YYYY-MM-DD&days=YYYY-MM-DD` — Get items for multiple days; returns a dictionary keyed by date string
@@ -158,6 +187,7 @@ Agenda items:
 - `GET /api/v1/notes/{note_id}/` — Get a note by ID
 - `PATCH /api/v1/notes/{note_id}/` — Update a note (partial), including its
   `is_pinned` state
+- `POST /api/v1/notes/{note_id}/append/` — Append an HTML fragment to an existing note
 
 #### Notes Folders
 - `GET /api/v1/notes/folders/` — Get all folders for the current user

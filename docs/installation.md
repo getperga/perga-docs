@@ -8,7 +8,7 @@ description: Self-host Perga with Docker Compose. Set up the web client, API, an
 
 Perga's combined installation runs the web client, API, PostgreSQL, and nginx with Docker Compose. The provided configuration is suitable for local use and as a starting point for a self-hosted deployment.
 
-The default setup uses plain HTTP. Before exposing it to the internet, complete the [production checklist](#production-deployment) and place it behind a TLS-terminating reverse proxy.
+By default, Perga is available only on your machine. For public access, use an HTTPS reverse proxy and follow the [production checklist](#production-deployment).
 
 ## Requirements
 
@@ -51,10 +51,13 @@ Review scripts downloaded from the internet before running them.
 ./install.sh
 ```
 
-On the first run, the script downloads the Compose file, nginx configuration, and environment template. It creates `.env`, pulls the container images, and starts the services.
+On the first run, the script downloads the Compose file, nginx configuration
+and Dockerfile, and environment template. It uses OpenSSL to create `.env`
+with a random API signing key and database password, pulls the application
+images, builds nginx and starts the services.
 
 The script does not overwrite existing `docker-compose.yml`, `.env.example`,
-`.env`, or `nginx/nginx.conf` files. Running it again starts the existing local
+`.env`, `nginx/nginx.conf`, or `nginx/Dockerfile` files. Running it again starts the existing local
 configuration without pulling new container images. Follow the
 [update procedure](#update-perga) when you intend to update Perga.
 
@@ -81,7 +84,8 @@ cd perga-install
 curl -fsSL \
   -o docker-compose.yml https://docs.getperga.me/installation/docker-compose.yml \
   -o .env.example https://docs.getperga.me/installation/.env.example \
-  -o nginx/nginx.conf https://docs.getperga.me/installation/nginx/nginx.conf
+  -o nginx/nginx.conf https://docs.getperga.me/installation/nginx/nginx.conf \
+  -o nginx/Dockerfile https://docs.getperga.me/installation/nginx/Dockerfile
 ```
 
 ### 2. Create the environment file
@@ -113,6 +117,7 @@ openssl rand -hex 32
 
 ```bash
 docker compose pull
+docker compose build --pull nginx
 docker compose up -d
 docker compose ps
 docker compose logs --tail=100 api web nginx db
@@ -130,12 +135,20 @@ Before exposing Perga to the internet:
 2. Terminate HTTPS with a maintained reverse proxy such as Caddy, Traefik, or an existing host-level nginx installation.
 3. Forward HTTPS traffic to the Perga nginx service and do not expose PostgreSQL publicly.
 4. Restrict the direct API and web-client ports to localhost or remove their host port mappings.
-5. Set `API_BASE_URL` to the public HTTPS API URL, for example `https://perga.example.com/api/v1`.
+5. Set `API_BASE_URL` to the public HTTPS API URL, for example `https://perga.example.com/api/v1`. Serve Web and API on the same site so browsers can send the session cookie.
 6. Set `CORS_ORIGINS` to the exact public origin, for example `["https://perga.example.com"]`.
-7. Replace the example database password and `SECRET_KEY`; keep `.env` readable only by the deployment operator.
+7. Replace the example database password, use a random `SECRET_KEY` with at least 32 bytes of entropy; keep `.env` readable only by the deployment operator.
 8. Decide whether public signup should be available. Set `IS_SIGNUP_DISABLED=true` when it should not.
 9. Configure automated off-machine backups and test a restore before relying on the deployment.
 10. Monitor service health, disk usage, certificate renewal, and backup completion.
+
+Keep the API port local and use nginx to limit login and signup attempts.
+Update API before nginx, and roll them back together.
+See [API ingress protection](./perga-api#docker).
+
+Web reports CSP issues without blocking resources. Check the browser console,
+then set `CSP_MODE=enforce` and recreate Web.
+See [Web CSP configuration](./perga-web#content-security-policy).
 
 A common layout is:
 
@@ -160,6 +173,12 @@ services:
 ```
 
 Do not copy this fragment into the Compose file as a second `services` block. Apply the port changes to the existing service definitions or maintain them in a reviewed production override.
+
+For local use, open Web at `http://localhost:3000` and use
+`http://localhost:8000/api/v1`. Use the same hostname in both URLs.
+After upgrading a pre-existing installation, ensure the attachments
+volume is writable by the API container's UID/GID `10001:10001`.
+Sign in again after upgrading to the API and Web versions with server-side sessions.
 
 ## Back up PostgreSQL
 
@@ -219,6 +238,15 @@ Replace the example restore filename with the archive you intend to restore. Aft
 
 The provided Compose file follows `latest` application images. Updates may include database migrations, so create and verify a backup first.
 
+Review changes to the [Compose template](/installation/docker-compose.yml),
+the [nginx configuration](pathname:///installation/nginx/nginx.conf), and
+the [nginx Dockerfile](pathname:///installation/nginx/Dockerfile) when updating an existing
+installation. Existing files are not overwritten by the installer: merge the
+auth limits and any trusted-proxy configuration into your local nginx config.
+The nginx recipe applies base-library security fixes on top of
+the pinned upstream image. After saving the reviewed recipe as
+`nginx/Dockerfile`, rebuild nginx explicitly as part of the update below.
+
 ```bash
 mkdir -p backups
 perga_backup_file="backups/perga-before-update-$(date +%F-%H%M%S).dump"
@@ -229,6 +257,7 @@ test -s "$perga_backup_file"
 docker compose exec -T db pg_restore --list < "$perga_backup_file" > /dev/null
 
 docker compose pull
+docker compose build --pull --no-cache nginx
 docker compose up -d
 docker compose ps
 docker compose logs --tail=100 api web nginx db

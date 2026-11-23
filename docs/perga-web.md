@@ -8,7 +8,7 @@ description: Install and configure Perga Web, the React client for daily and wee
 # Perga Web
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/getperga/perga-web/blob/main/LICENSE)
-![Node.js](https://img.shields.io/badge/Node.js-20-green.svg)
+![Node.js](https://img.shields.io/badge/Node.js-24-green.svg)
 [![CI](https://github.com/getperga/perga-web/actions/workflows/ci.yml/badge.svg)](https://github.com/getperga/perga-web/actions/workflows/ci.yml)
 
 The browser client for Perga. It connects to the [Perga API](./perga-api) and provides a responsive interface for daily planning and notes.
@@ -55,7 +55,7 @@ Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/)
 
 ## Requirements
 
-- Node.js 20 (the Docker build uses `node:20-alpine`)
+- Node.js 24.22.3 (pinned in `.nvmrc`, CI, and the Docker builder)
 - npm 8+ (project uses npm; a `package-lock.json` is included)
 
 ## Environment variables
@@ -68,6 +68,20 @@ Available variables:
 - `API_BASE_URL` — Base URL of Perga API (example: `http://127.0.0.1:8000/api/v1`)
 - `IS_SIGNUP_DISABLED` — When `true`, hides/disables the Signup option in the UI
 - `GOOGLE_CLIENT_ID` — Google OAuth 2.0 Client ID; enables the "Sign in with Google" button when set. Must match the `GOOGLE_CLIENT_ID` configured in Perga API.
+- `CSP_MODE` — Docker runtime only: `report-only` (default), `enforce`, or `off`.
+- `CSP_POLICY` — Optional complete Content Security Policy override for the Docker runtime; empty selects the generated default.
+
+### Content Security Policy
+
+The Docker runtime defaults to `report-only`: violations appear in the browser
+console without blocking resources. Check sign-in, editing, attachments and
+PWA updates, then set `CSP_MODE=enforce` and recreate Web. Use `CSP_MODE=off`
+if your proxy manages CSP.
+
+`CSP_POLICY` replaces the generated policy, including its API and Google
+sign-in sources. Keep the sources your installation needs. Use a single line
+without double quotes, backslashes, dollar signs or control characters;
+invalid settings prevent startup. These options do not configure Vite dev.
 
 ## Installation
 
@@ -117,6 +131,7 @@ The build output is written to the `dist/` directory.
 ## Docker
 
 The app can be built and served by nginx using Docker Compose.
+The runtime uses the pinned nginx 1.31.9 Alpine slim image.
 
 ```bash
 # Build and start
@@ -152,7 +167,7 @@ perga-web/
 ├── public/               # Public assets
 ├── .env.example          # Example environment variables
 ├── docker-compose.yml    # Docker Compose configuration
-├── Dockerfile            # Multi-stage build (Node 20) + nginx runner
+├── Dockerfile            # Multi-stage build (Node 24) + nginx runner
 ├── nginx/nginx.conf      # nginx config for SPA
 ├── index.html            # HTML entry point
 ├── package.json          # Scripts and dependencies
@@ -196,6 +211,18 @@ Moving a pinned note to Trash hides it from the pinned list without clearing its
 pinned state, so it reappears after restoration. Pin and unpin actions are
 unavailable while browsing Trash. Use the note's **Restore** action to move it
 back to the root Notes folder.
+
+### Opening a note from a link
+
+Open `<webBaseUrl>/notes/<id>/` to select a specific note, for example
+`https://app.getperga.me/notes/38479/`. If sign-in is required, Perga Web returns
+to the note after password or Google sign-in.
+
+After checking access, Web selects the note using the ordinary Notes history
+and replaces the URL with `/notes/`. This is a one-time selection link; Back
+returns to the preceding page without reopening the link. An invalid or
+unavailable note shows an error and leaves the previous selection unchanged.
+The same link format works with a self-hosted Web URL.
 
 ### Moving and duplicating content in the editor
 
