@@ -4,20 +4,18 @@ sidebar_position: 5
 
 # Notes Attachments
 
-Attachments are stored outside PostgreSQL. The database contains metadata,
-ownership and stable attachment references. Clients use the same API for local
-and S3 storage.
+Files are stored on disk or in S3; PostgreSQL stores their details and note
+references. Both storage options use the same API.
 
 ## Setup
 
 Install `docs/requirements.txt` and run `alembic upgrade head` before serving requests.
 
-The default backend is `ATTACHMENTS_STORAGE=local`, with files in
-`ATTACHMENTS_LOCAL_ROOT=./data/attachments` relative to the application working
-directory. Docker Compose mounts a persistent `attachments_data` volume at
-`/app/data/attachments`. If you change the directory, update the mount too.
-The API process must have read/write access. Never expose this directory as
-public static files. Multiple API replicas require a shared volume or S3.
+By default, `ATTACHMENTS_STORAGE=local` stores files in
+`ATTACHMENTS_LOCAL_ROOT=./data/attachments`, relative to the API's working
+directory. Compose mounts the `attachments_data` volume at `/app/data/attachments`.
+If you change this path, update the volume mount and give the API read/write
+access. Keep the directory private. Multiple API instances need shared storage or S3.
 
 For S3-compatible storage:
 
@@ -31,41 +29,34 @@ AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
 ```
 
-Omit `ATTACHMENTS_S3_ENDPOINT_URL` for AWS S3. Addressing style accepts `auto`,
-`path`, or `virtual`; choose the setting required by your provider. Credentials
-use boto3's standard chain, including environment variables and IAM roles.
-The application does not make buckets public or create them. Provision a private
-bucket and grant only object read/write/delete permissions for the application
-prefix `notes/`. Bucket policies must deny public access; no public-read ACL is
-sent. Custom providers need compatible PutObject, GetObject and DeleteObject.
+For AWS S3, omit `ATTACHMENTS_S3_ENDPOINT_URL`. Choose `auto`, `path`, or
+`virtual` addressing as required by your provider. Supply credentials through
+environment variables, IAM roles, or another standard boto3 credential source.
 
-Cloudflare R2, DigitalOcean Spaces and self-hosted S3 implementations can expose
-this API; compatibility differs between providers. Automated tests verify SDK
-requests and failure mapping, not live compatibility with each provider.
+Create a private bucket and allow object read, write, and delete under `notes/`.
+Keep public access disabled. Other S3 providers must support PutObject,
+GetObject, and DeleteObject; test your provider before use.
 
-A missing S3 bucket setting or invalid endpoint fails configuration validation.
-Storage is constructed at startup; local directory errors fail startup. Network
-access and object permissions are checked when operations are attempted;
-provider failures return 503 without exposing credentials or internal keys.
+Invalid storage settings or local directory errors prevent startup. S3 access
+is checked during file operations; provider failures return 503.
 
-Changing the backend does not migrate existing objects. Copy files under the
-same relative keys while writes are stopped, switch settings, then verify
-reads. Back up both PostgreSQL and the files/bucket and restore them together.
+To switch storage, stop writes, copy files with the same relative paths,
+change the settings, and check that files open. Files are not moved automatically.
+Back up and restore PostgreSQL and attachment storage together.
 
 ## API
 
-All routes require the existing `Authorization: Bearer ...` authentication.
+All routes require `Authorization: Bearer ...`.
 
 | Method | Route | Result |
 | --- | --- | --- |
-| POST | `/api/v1/notes/{note_id}/attachments/` | Multipart field `file`; 201 with metadata |
-| GET | `/api/v1/notes/{note_id}/attachments/` | Available ready attachments, including uploads within retention |
-| GET | `/api/v1/notes/{note_id}/attachments/{id}/content/` | Private image bytes. Use `?preview=true` to request a smaller representation |
+| POST | `/api/v1/notes/{note_id}/attachments/` | Upload multipart field `file`; returns 201 with file details |
+| GET | `/api/v1/notes/{note_id}/attachments/` | List attachments, including unused uploads within the retention period |
+| GET | `/api/v1/notes/{note_id}/attachments/{id}/content/` | Download a file; use `?preview=true` for a smaller image |
 
-The configured `API_V1_STR` replaces `/api/v1`. Metadata includes `id`, `note_id`,
+`API_V1_STR` sets the `/api/v1` prefix. Metadata includes `id`, `note_id`,
 `original_filename`, `content_type`, `size_bytes`, `width`, `height`, `created_dt`
-and `url`. Attachment IDs are integers inherited from the shared `BaseModel`;
-storage keys keep random UUID filenames. The internal storage key and provider endpoint are not exposed.
+and `url`. IDs are integers; internal storage paths are not exposed.
 
 Create the note first, upload its images, then save its HTML body:
 
@@ -74,70 +65,52 @@ Create the note first, upload its images, then save its HTML body:
 <img data-attachment-id="ATTACHMENT_ID" src="RETURNED_ATTACHMENT_URL" alt="Screenshot">
 ```
 
-The server verifies ownership and ready status and reconstructs `src`. An image
-with only the canonical `src` is also recognized. Unknown/foreign/expired IDs
-and new external images are rejected with 422. Existing legacy external images
-may be preserved unchanged when editing an old note; new copies or changed
-attributes are rejected. The API does not download external URLs. A single
-attachment belongs to one note; cross-note copies require uploading a new file.
+The API checks ownership and availability, then fills in `src`. The returned
+URL also works without an ID. Invalid, expired, or another user's attachments
+return 422. Each attachment belongs to one note; upload a new copy for another note.
+New external images are rejected. Existing external images in old notes can
+be kept unchanged, but cannot be copied or modified. The API does not download them.
 
-The returned URL is relative to the API origin. A browser `<img>` cannot attach
-a Bearer header: fetch bytes with authentication and render a temporary `blob:`
-URL, while persisting the canonical URL and attachment ID. Never persist a blob
-URL or an expiring presigned URL. Downloads use `Cache-Control: private,
-no-store` and `X-Content-Type-Options: nosniff`. Both storage modes stream through
-the API; direct S3 upload, public URLs and presigned downloads are not enabled.
+Attachment URLs are relative to the API origin. A browser `<img>` cannot send
+a Bearer header: fetch the image with authentication and display a temporary
+`blob:` URL. Save the returned API URL and attachment ID, not the blob URL.
+All uploads and downloads go through the API, including S3 files; public and
+presigned URLs are not supported. Downloads use `Cache-Control: private, no-store`
+and `X-Content-Type-Options: nosniff`.
 
-The web editor requests previews for display. When an image larger than 1600
-pixels on the longest edge is uploaded or imported, the API generates a WebP
-preview and stores it alongside the original.
-The API stores the preview key and byte size on the attachment. It uses the
-key to locate the preview and the size for the response `Content-Length`.
-If no key is set or the preview file is unavailable, the API serves the original.
-Existing attachments have neither field set. Read the response `Content-Type` to determine
-the format. Requests without `preview=true` and exports use the original.
-Attachment cleanup removes both files.
+Images over 1600 pixels on their longest edge get a WebP preview on upload or
+import. The editor requests it with `?preview=true`; if unavailable, the API
+returns the original. Check `Content-Type` for the format. Other requests and
+exports use the original. Cleanup removes both files.
 
-In the web editor, use **Insert image** for images and **Attach file** for
-other files. You can also paste files from the clipboard or drag them into the
-note body. The editor shows upload
-status and any errors. Successfully uploaded images are inserted into the
-note and saved by autosave. You can upload images as soon as the new note opens.
+Use **Insert image** or **Attach file**, paste files, or drag them into a note.
+Uploads show their progress and errors; uploaded images are saved automatically.
+You can upload as soon as a new note opens.
 
 PNG, JPEG and WebP images display inline. PDF, TXT, Markdown, CSV, Word,
 Excel, PowerPoint and ZIP files appear as download links with an icon showing
-the file extension. The API reports
-`attachment_type` as `image` or `file`. File attachments have null `width`
-and `height`, and the content route serves them as
+the file extension. `attachment_type` is `image` or `file`. Files have null
+`width` and `height` and are served as
 `application/octet-stream` with `Content-Disposition: attachment`.
 Use `<a data-attachment-id="ATTACHMENT_ID">Filename</a>` to reference a file
 in note HTML. The API fills in the canonical download URL.
 
-Use **Open original** in the upper-right corner of an attachment to open the
-full-resolution file in a new tab. The button appears on hover or selection
-and stays visible on touch devices. The browser's **Open image in new tab**
-command opens the image displayed in the note.
+Use **Open original** on an attachment to open the full-resolution file in a new
+tab. The browser's **Open image in new tab** opens the displayed image, which
+may be a preview.
 
-To resize an uploaded image, drag the handle in its lower-right corner. You can
-also focus the handle with Tab and use the Left and Right arrow keys. Resizing
-keeps the image's proportions and saves its display width in the note. Undo
-restores the previous width.
+Resize an image with its lower-right handle, or focus the handle with Tab and
+use Left/Right. The image keeps its proportions. Its display width is saved in
+the note; Undo restores the previous width.
 
-To remove an image, select it in the editor and press Delete or Backspace.
-Undo restores the same attachment while the file is still within the retention
-period. Autosave sends the updated note body in edit order, and the cleanup
-command removes unused files after the retention period.
-
-The web editor loads images from its configured API with authentication. It
-releases temporary object URLs when an image is removed, another note opens,
-or the editor closes. The saved HTML contains the stable attachment URL and ID.
+Select an image and press Delete or Backspace to remove it. Undo can restore
+it during the retention period. Unused files are removed by scheduled cleanup.
 
 ## Validation and limits
 
-Only static PNG, JPEG and WebP are accepted. Pillow verifies and decodes images;
-client MIME types and filename extensions are not trusted. SVG, animation,
-corrupt images, and oversized images are rejected. Original validated bytes are
-stored without resizing or metadata stripping.
+Images must be static PNG, JPEG, or WebP. The API checks file contents and
+rejects SVG, animation, corrupt images, and oversized files. Originals are
+stored without resizing or removing metadata.
 
 | Setting | Default |
 | --- | --- |
@@ -147,20 +120,15 @@ stored without resizing or metadata stripping.
 | `ATTACHMENTS_MAX_PER_NOTE` | 100 attachment records |
 | `ATTACHMENTS_UNUSED_TTL_DAYS` | 7 days |
 
-Pending and soft-deleted attachments count toward quotas until physical cleanup succeeds.
-Concurrent upload reservations are serialized per user. File and pixel/quota
-violations return 413; unsupported or invalid image data returns 415. Trash
-notes are readable but cannot accept uploads/body edits (409).
+Uploads and files awaiting deletion count toward quotas until cleanup finishes.
+Size, pixel, or quota violations return 413; invalid or unsupported images return 415.
+Notes in Trash can be read but not edited or given new attachments (409).
 
-Attachment upload requests are bounded before multipart parsing, including
-chunked requests without Content-Length. Multipart overhead is limited to an
-additional 64 KiB. The included Nginx cap is 11 MiB, covering the default
-10 MiB file limit and multipart overhead. If you increase
-`ATTACHMENTS_MAX_FILE_SIZE_MB`, also increase `client_max_body_size` in
-`nginx/nginx.conf` to cover that file size plus at least 64 KiB of overhead.
-The static Nginx configuration does not read this environment variable.
-Use equivalent limits on any other reverse proxy. Concurrent request limits/timeouts remain deployment
-settings, independent of per-user storage quotas.
+Nginx allows 11 MiB per upload request for the default 10 MiB file limit.
+If you increase `ATTACHMENTS_MAX_FILE_SIZE_MB`, also raise `client_max_body_size`
+in `nginx/nginx.conf` to the file limit plus at least 64 KiB for upload overhead.
+This is not automatic. Set equivalent limits on any other proxy; configure
+request timeouts and concurrency separately from storage quotas.
 
 ## Cleanup and failure recovery
 
@@ -170,51 +138,31 @@ Schedule this command periodically (for example, hourly):
 docker compose exec -T app python -m app.commands.cleanup_attachments --limit 100
 ```
 
-Without Docker, run `python -m app.commands.cleanup_attachments --limit 100` from the API
-root with the same environment and storage access as the server. The limit is
-candidates per run; schedule enough runs to process the expected volume.
+Without Docker, run `python -m app.commands.cleanup_attachments --limit 100`
+from the API root with the server's environment and storage access. Each run
+checks up to 100 candidates; adjust the limit or schedule for your upload volume.
 
-Attachments inherit `id`, `created_dt`, `updated_dt`, `is_deleted`, and
-`deleted_dt` from `BaseModel`. Upload status is either `uploading` or `ready`;
-there is no separate deletion status or unused timestamp.
+New uploads must be added to a note before the retention period ends. Removing
+the last reference starts the same retention period. During this time, files
+can still be listed, read, and restored with Undo. After expiry, they become
+unavailable even if cleanup has not yet deleted them.
 
-A completed upload is initially soft-deleted (`is_deleted=true`, `deleted_dt`
-set to the current time) until it is inserted into the note. Saving a reference
-restores it (`is_deleted=false`, `deleted_dt=null`). Removing the final reference
-soft-deletes it again. Repeated saves without a reference do not reset its
-deletion time. Ready soft-deleted files can be listed, read and restored during
-the configured retention window, allowing initial insertion and undo. After the
-window expires, these endpoints hide them and new references are rejected even
-if physical cleanup has not run yet.
-
-Moving a note into trash preserves its images. Permanently deleted notes and
-folders make their ready attachments eligible for cleanup immediately. Stale
-`uploading` records older than 24 hours are reclaimed; a live upload holds the
-note lock during storage I/O, and cleanup skips locked notes.
-
-Cleanup rechecks references under the same note-first locks used by saves and
-holds those locks through physical deletion and database commit. This prevents
-a save from restoring an attachment while its file is being removed. Failed
-storage deletions retain the soft-deleted record and its deletion timestamp for
-a later retry. A crash after file deletion is recoverable because deleting an
-already absent object succeeds. Commands can run repeatedly and concurrently.
-Upload failures attempt compensation; failed compensation remains visible to
-scheduled cleanup.
+Trash preserves attachments. Permanently deleting a note or folder makes its
+attachments ready for cleanup immediately. Unfinished uploads expire after
+24 hours. Cleanup retries failed deletions on later runs. It is safe to run
+repeatedly or concurrently.
 
 ## Export and import
 
-HTML/Markdown exports containing managed attachments are ZIP files with an
-`assets/` directory and relative references. Other single-note exports keep
-their plain HTML/Markdown response. PDF embeds images and shows the names of
-other attachments as text. Exported HTML/Markdown removes internal attachment IDs.
+HTML and Markdown exports with attachments come as ZIP files with an `assets/`
+directory and relative links, without internal attachment IDs. Single notes
+without attachments export as plain HTML or Markdown. PDFs include images
+and show other attachment names as text.
 
-ZIP import recreates attachments and rewrites links with new IDs.
-Documents with local attachments must be packaged with their assets in a ZIP.
-External image URLs are rejected. Archive paths must remain inside the
-archive; duplicate/traversal entries are rejected. Imports are limited to 1,000
-ZIP entries and 100 MiB expanded data, in addition to the existing 10 MiB total
-uploaded import limit. Image and quota limits also apply during import.
+To import local attachments, put the document and its files in a ZIP. The API
+creates new attachments and updates their links. External images, duplicate
+paths, and paths outside the archive are rejected. Limits are 10 MiB uploaded,
+1,000 ZIP entries, and 100 MiB uncompressed data. Image and storage quotas also apply.
 
-Imports retain the existing incremental semantics across documents. If a
-per-document attachment upload fails, the incomplete new note is marked deleted and
-its uploaded files become cleanup candidates; already imported documents remain.
+If an attachment fails to import, its incomplete note is marked deleted and
+its files are scheduled for cleanup. Previously imported notes are kept.

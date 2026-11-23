@@ -11,8 +11,8 @@ Perga is a personal workspace for notes, plans, and ideas.
 
 Perga consists of two main components:
 
-1. **[Perga API](https://github.com/getperga/perga-api)**: The backend service providing the core functionality and data storage.
-2. **[Perga Web](https://github.com/getperga/perga-web)**: A standalone browser client that connects to the backend to provide a user-friendly web interface.
+1. **[Perga API](https://github.com/getperga/perga-api)** stores your data and handles requests.
+2. **[Perga Web](https://github.com/getperga/perga-web)** lets you use Perga in a browser.
 
 ## Screenshots
 
@@ -43,7 +43,5 @@ To run Perga on your own server, follow the [installation guide](./installation.
 
 ## Documentation Structure
 
-This documentation provides detailed information about both components of the Perga system:
-
-- [Perga API Documentation](./perga-api): Details about the backend API, including installation, endpoints, and development guidelines.
-- [Perga Web Documentation](./perga-web): Information about the web client, including setup, project structure, and development workflow.
+- [Perga API](./perga-api): Setup, endpoints, and development.
+- [Perga Web](./perga-web): Setup, features, and development.

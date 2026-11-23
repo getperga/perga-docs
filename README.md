@@ -1,6 +1,6 @@
 # Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Perga documentation, built with [Docusaurus](https://docusaurus.io/).
 
 ## Installation
 
@@ -15,7 +15,7 @@ npm ci
 npm start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+Opens the site locally and reloads it as you edit.
 
 ## Build
 
@@ -23,11 +23,12 @@ This command starts a local development server and opens up a browser window. Mo
 npm run build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+Creates the site in `build`, ready for static hosting.
 
 ## Deployment
 
-Use the Node.js version in `.nvmrc`. Build from the reviewed source commit with `npm ci` and record the source and published Pages commits in the release notes.
+Use the Node.js version in `.nvmrc` and run `npm ci`. Record the source and
+published Pages commits in the release notes.
 
 Using SSH:
 
@@ -35,10 +36,10 @@ Using SSH:
 USE_SSH=true npm run deploy
 ```
 
-Not using SSH:
+Using HTTPS:
 
 ```bash
 GIT_USER=<Your GitHub username> npm run deploy
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+These commands build the site and publish it to the `gh-pages` branch.

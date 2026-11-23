@@ -2,7 +2,7 @@
 sidebar_position: 3
 sidebar_label: Perga Web
 title: Browser Client for the Perga Planner and Notes App
-description: Install and configure Perga Web, the React client for daily and weekly planning and organized notes. Connect the browser app to your own Perga API server.
+description: Set up Perga Web for planning and notes, and connect it to your own Perga API server.
 ---
 
 # Perga Web
@@ -11,11 +11,11 @@ description: Install and configure Perga Web, the React client for daily and wee
 ![Node.js](https://img.shields.io/badge/Node.js-24-green.svg)
 [![CI](https://github.com/getperga/perga-web/actions/workflows/ci.yml/badge.svg)](https://github.com/getperga/perga-web/actions/workflows/ci.yml)
 
-The browser client for Perga. It connects to the [Perga API](./perga-api) and provides a responsive interface for daily planning and notes.
+The browser client for Perga. Plan your days and manage notes with your own [Perga API](./perga-api) server.
 
 ## Overview
 
-Perga Web is a standalone SPA built with React and Vite. It communicates with Perga API using a configurable base URL and implements authentication, planner views, and user settings fully in the browser.
+Perga Web uses React and Vite. Set `API_BASE_URL` to connect it to your API server.
 
 ## Screenshots
 
@@ -55,8 +55,8 @@ Try Perga without installing it at [demo.getperga.me](https://demo.getperga.me/)
 
 ## Requirements
 
-- Node.js 24.22.3 (pinned in `.nvmrc`, CI, and the Docker builder)
-- npm 8+ (project uses npm; a `package-lock.json` is included)
+- Node.js 24.22.3 (see `.nvmrc`)
+- npm 8+
 
 ## Environment variables
 
@@ -66,10 +66,10 @@ cp .env.example .env
 ```
 Available variables:
 - `API_BASE_URL` — Base URL of Perga API (example: `http://127.0.0.1:8000/api/v1`)
-- `IS_SIGNUP_DISABLED` — When `true`, hides/disables the Signup option in the UI
-- `GOOGLE_CLIENT_ID` — Google OAuth 2.0 Client ID; enables the "Sign in with Google" button when set. Must match the `GOOGLE_CLIENT_ID` configured in Perga API.
+- `IS_SIGNUP_DISABLED` — Set to `true` to hide Signup
+- `GOOGLE_CLIENT_ID` — Enables Google sign-in; must match the API's `GOOGLE_CLIENT_ID`
 - `CSP_MODE` — Docker runtime only: `report-only` (default), `enforce`, or `off`.
-- `CSP_POLICY` — Optional complete Content Security Policy override for the Docker runtime; empty selects the generated default.
+- `CSP_POLICY` — Custom CSP for Docker; leave empty for the default policy.
 
 ### Content Security Policy
 
@@ -196,45 +196,34 @@ npm run test:coverage
 
 ## Notes Section
 
-The Notes section provides tools for personal knowledge management:
+Use Notes to organize and search your writing:
 
-- **Folders**: Organize notes into hierarchical folders.
-- **Pinned notes**: Pin or unpin a note from its folder-tree menu or the editor
-  toolbar. On desktop, pinned notes appear in a collapsible panel on the right;
-  the panel remembers whether it was open. On mobile, use the pin button in the
-  Notes header to open the same list in a drawer.
-- **Import/Export**: Support for Markdown, HTML, and PDF (export only).
+- **Folders**: Group notes in folders and subfolders.
+- **Pinned notes**: Use the note menu or editor toolbar to pin a note. Find
+  pinned notes in the right panel on desktop, or tap the pin button on mobile.
+- **Import/Export**: Import and export Markdown and HTML; export PDF.
 - **Search**: Search across note titles and contents.
 
-Pinned notes are ordered by most recent update and include their folder path.
-Moving a pinned note to Trash hides it from the pinned list without clearing its
-pinned state, so it reappears after restoration. Pin and unpin actions are
-unavailable while browsing Trash. Use the note's **Restore** action to move it
-back to the root Notes folder.
+Pinned notes show the most recently updated first, with their folder paths.
+Notes in Trash are hidden from the list and cannot be pinned or unpinned.
+Use **Restore** to return a note to the root Notes folder; pinned notes reappear in the list.
 
 ### Opening a note from a link
 
-Open `<webBaseUrl>/notes/<id>/` to select a specific note, for example
-`https://app.getperga.me/notes/38479/`. If sign-in is required, Perga Web returns
-to the note after password or Google sign-in.
-
-After checking access, Web selects the note using the ordinary Notes history
-and replaces the URL with `/notes/`. This is a one-time selection link; Back
-returns to the preceding page without reopening the link. An invalid or
-unavailable note shows an error and leaves the previous selection unchanged.
-The same link format works with a self-hosted Web URL.
+Link to a note with `<webBaseUrl>/notes/<id>/`, for example
+`https://app.getperga.me/notes/38479/`. After sign-in, Web opens the note and
+changes the URL to `/notes/`. Back returns to the previous page.
+Invalid or unavailable notes show an error without changing the selection.
+For self-hosted installations, replace the base URL with your own.
 
 ### Moving and duplicating content in the editor
 
-Press **Shift+Option+↑** or **Shift+Option+↓** on macOS (**Shift+Alt** with the
-same arrows on Windows and Linux) to move the block at the cursor up or down.
-If a selection spans several blocks, they move together and the selection stays
-with them. Inside a list, the shortcut moves items within that list.
-Wrapped lines and soft line breaks move together with their paragraph.
+Use **Shift+Option+↑/↓** on macOS or **Shift+Alt+↑/↓** on Windows and Linux
+to move the current block or selected blocks. In a list, this moves list items.
+Paragraphs move as a whole, including wrapped lines and soft line breaks.
 
-Press **Cmd+D** on macOS to insert a copy of the current block, list item, or
-selected group immediately below the original. The cursor or selection moves
-to the copy.
+Use **Cmd+D** on macOS to duplicate the current block, list item, or selection
+below the original. The cursor or selection moves to the copy.
 
 ## Path Aliases
 
@@ -257,10 +246,10 @@ Badge: ![Build](https://github.com/getperga/perga-web/actions/workflows/ci.yml/b
 
 ## Troubleshooting
 
-- CORS: ensure `API_BASE_URL` points to the correct API and that CORS is enabled by the API.
+- CORS errors: check `API_BASE_URL` and add the Web origin to the API's `CORS_ORIGINS`.
 - Signup hidden: set `IS_SIGNUP_DISABLED=false` (or omit) to show the Signup link.
-- Blank page in production: verify nginx serves `index.html` for SPA routes (configured via `try_files` in `nginx.conf`).
+- Blank page: check that nginx serves `index.html` for app routes (`try_files` in `nginx.conf`).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/getperga/perga-web/blob/main/LICENSE) file for details.
+Released under the [MIT License](https://github.com/getperga/perga-web/blob/main/LICENSE).

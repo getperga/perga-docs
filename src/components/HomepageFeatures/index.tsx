@@ -15,7 +15,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/feature1.svg').default,
     description: (
       <>
-        Stay focused with a clean daily view that helps you manage tasks effectively.
+        See and organize your tasks for the day.
       </>
     ),
   },
@@ -24,7 +24,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/feature2.svg').default,
     description: (
       <>
-        Plan ahead with a monthly overview and keep your long-term goals organized in custom agendas.
+        Plan your month and group long-term goals in custom agendas.
       </>
     ),
   },
@@ -33,7 +33,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/feature3.svg').default,
     description: (
       <>
-        Access your planner seamlessly on any device — desktop, tablet, or mobile.
+        Use your planner on desktop, tablet, or mobile.
       </>
     ),
   },

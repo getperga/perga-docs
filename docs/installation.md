@@ -6,19 +6,19 @@ description: Self-host Perga with Docker Compose. Set up the web client, API, an
 
 # Installation and self-hosting
 
-Perga's combined installation runs the web client, API, PostgreSQL, and nginx with Docker Compose. The provided configuration is suitable for local use and as a starting point for a self-hosted deployment.
+Docker Compose runs Perga Web, API, PostgreSQL, and nginx together. Use this setup locally or configure it for your own server.
 
 By default, Perga is available only on your machine. For public access, use an HTTPS reverse proxy and follow the [production checklist](#production-deployment).
 
 ## Requirements
 
 - Docker Engine with the Compose plugin
-- A machine that can pull images from GitHub Container Registry and Docker Hub
-- For a public deployment: a domain, TLS, firewall rules, monitoring, and off-machine backups
+- Access to GitHub Container Registry and Docker Hub
+- For public access: a domain, HTTPS, a firewall, monitoring, and backups on another machine
 
 ## Services and data
 
-The combined installer starts:
+The installer starts:
 
 | Service | Purpose | Default local access |
 | --- | --- | --- |
@@ -27,10 +27,9 @@ The combined installer starts:
 | `web` | Perga browser client | `http://localhost:3000` |
 | `nginx` | Combined reverse proxy | `http://localhost` |
 
-PostgreSQL data is stored in the named Docker volume `postgres_data`. Recreating a container does not normally remove this volume. The volume is not a backup: deleting it, losing the host, or corrupting the database can still destroy the data.
+PostgreSQL stores data in the Docker volume `postgres_data`, which survives container replacement. Keep separate backups in case the volume or host is lost.
 
-The combined installer and the standalone development Compose file in the
-`perga-api` repository use PostgreSQL 16.
+Both this installer and the API's development Compose setup use PostgreSQL 16.
 
 ## Quick local installation
 
@@ -51,15 +50,12 @@ Review scripts downloaded from the internet before running them.
 ./install.sh
 ```
 
-On the first run, the script downloads the Compose file, nginx configuration
-and Dockerfile, and environment template. It uses OpenSSL to create `.env`
-with a random API signing key and database password, pulls the application
-images, builds nginx and starts the services.
+On the first run, the script downloads the setup files and uses OpenSSL to
+create `.env` with a random signing key and database password. It then
+downloads the application images, builds nginx, and starts Perga.
 
-The script does not overwrite existing `docker-compose.yml`, `.env.example`,
-`.env`, `nginx/nginx.conf`, or `nginx/Dockerfile` files. Running it again starts the existing local
-configuration without pulling new container images. Follow the
-[update procedure](#update-perga) when you intend to update Perga.
+Existing files are kept. Running the installer again starts your current
+setup without downloading new images. To upgrade, follow [Update Perga](#update-perga).
 
 ### 3. Verify the installation
 
@@ -99,13 +95,13 @@ Edit `.env` before starting the services.
 
 Important variables:
 
-- `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: PostgreSQL connection and credentials. Keep `POSTGRES_HOST=db` for the provided Compose network.
+- `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: database settings. Keep `POSTGRES_HOST=db` with the supplied Compose file.
 - `SECRET_KEY`: API signing secret. Replace the example value with a long random value.
 - `CORS_ORIGINS`: JSON array of browser origins allowed to call the API.
 - `API_BASE_URL`: API URL used by the browser client.
-- `IS_SIGNUP_DISABLED`: set to `true` when public self-registration should be disabled.
+- `IS_SIGNUP_DISABLED`: set to `true` to disable public signup.
 - `SQLALCHEMY_POOL_SIZE`, `SQLALCHEMY_MAX_OVERFLOW`, `SQLALCHEMY_POOL_TIMEOUT`, `SQLALCHEMY_POOL_RECYCLE`: API database pool settings.
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: optional Google OAuth credentials. Leave both empty when Google sign-in is not configured.
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: Google sign-in credentials. Leave both empty if unused.
 
 You can generate a random secret with:
 
@@ -127,20 +123,20 @@ The API container runs pending Alembic database migrations when it starts.
 
 ## Production deployment
 
-The downloaded configuration does not provide a complete production deployment. It exposes plain HTTP and does not automate certificates, firewall configuration, backups, monitoring, or tested rollbacks.
+For public access, add HTTPS, a firewall, backups, and monitoring to the default setup.
 
 Before exposing Perga to the internet:
 
-1. Create a DNS record for the hostname you will use.
-2. Terminate HTTPS with a maintained reverse proxy such as Caddy, Traefik, or an existing host-level nginx installation.
-3. Forward HTTPS traffic to the Perga nginx service and do not expose PostgreSQL publicly.
-4. Restrict the direct API and web-client ports to localhost or remove their host port mappings.
-5. Set `API_BASE_URL` to the public HTTPS API URL, for example `https://perga.example.com/api/v1`. Serve Web and API on the same site so browsers can send the session cookie.
-6. Set `CORS_ORIGINS` to the exact public origin, for example `["https://perga.example.com"]`.
-7. Replace the example database password, use a random `SECRET_KEY` with at least 32 bytes of entropy; keep `.env` readable only by the deployment operator.
-8. Decide whether public signup should be available. Set `IS_SIGNUP_DISABLED=true` when it should not.
-9. Configure automated off-machine backups and test a restore before relying on the deployment.
-10. Monitor service health, disk usage, certificate renewal, and backup completion.
+1. Point your domain to the server with a DNS record.
+2. Set up an HTTPS reverse proxy, such as Caddy, Traefik, or nginx.
+3. Forward traffic to Perga nginx. Keep PostgreSQL private.
+4. Keep the direct API and Web ports on localhost, or remove their port mappings.
+5. Set `API_BASE_URL`, for example `https://perga.example.com/api/v1`. Keep Web and API on the same site so session cookies work.
+6. Set `CORS_ORIGINS` to the Web origin, for example `["https://perga.example.com"]`.
+7. Replace example passwords and generate `SECRET_KEY` with `openssl rand -hex 32`. Restrict access to `.env` to the server operator.
+8. Set `IS_SIGNUP_DISABLED=true` if public signup should be disabled.
+9. Schedule backups to another machine and test restoring them.
+10. Monitor service health, disk space, certificates, and backups.
 
 Keep the API port local and use nginx to limit login and signup attempts.
 Update API before nginx, and roll them back together.
@@ -157,7 +153,8 @@ Internet -> HTTPS reverse proxy -> 127.0.0.1:8080 -> Perga nginx -> web/API
                                                    -> PostgreSQL on Docker network
 ```
 
-For this layout, bind the Perga nginx HTTP port to localhost, for example `127.0.0.1:8080:80`, and configure the external reverse proxy to forward the original host and client forwarding headers. Bind the direct API and web ports to localhost if you keep them for diagnostics:
+Bind Perga's ports to localhost as shown below. Configure the HTTPS proxy to
+forward the original host and client IP; trust only that proxy in Perga nginx.
 
 ```yaml
 services:
@@ -172,17 +169,16 @@ services:
       - "127.0.0.1:8080:80"
 ```
 
-Do not copy this fragment into the Compose file as a second `services` block. Apply the port changes to the existing service definitions or maintain them in a reviewed production override.
+Update the existing `services` entries or use a Compose override. Do not add a second `services` block.
 
 For local use, open Web at `http://localhost:3000` and use
 `http://localhost:8000/api/v1`. Use the same hostname in both URLs.
-After upgrading a pre-existing installation, ensure the attachments
-volume is writable by the API container's UID/GID `10001:10001`.
-Sign in again after upgrading to the API and Web versions with server-side sessions.
+When upgrading an older installation, give API user `10001:10001` write access
+to the attachments volume. Sign in again after upgrading to server-side sessions.
 
 ## Back up PostgreSQL
 
-Create a logical PostgreSQL backup before every update and on a regular schedule. Store copies outside the Docker host.
+Back up PostgreSQL regularly and before each update. Keep copies on another machine.
 
 From the installation directory:
 
@@ -197,13 +193,14 @@ docker compose exec -T db pg_restore --list < "$perga_backup_file" > /dev/null
 echo "$perga_backup_file"
 ```
 
-The final two checks confirm that the file is not empty and that `pg_restore` can read its archive structure. They do not replace a full restore test.
+The checks confirm that the backup is nonempty and readable. Also test restoring it.
 
-Also keep protected copies of the deployment's `.env`, `docker-compose.yml`, and nginx configuration. The `.env` file contains secrets and must not be stored in a public repository or an unencrypted public location.
+Also back up `.env`, `docker-compose.yml`, and the nginx configuration. Encrypt
+backups of `.env` and keep them private: it contains passwords and signing keys.
 
 ## Restore PostgreSQL
 
-Restoring replaces the current Perga database with the contents of the selected backup. Verify the filename and keep a separate copy of the current database before continuing.
+Restoring replaces the current database. Check the backup filename and save a copy of the current database first.
 
 Stop services that connect to the database:
 
@@ -232,20 +229,18 @@ docker compose ps
 docker compose logs --tail=100 api web nginx db
 ```
 
-Replace the example restore filename with the archive you intend to restore. After restoring, sign in and verify planner items, agendas, notes, search, and note imports and exports relevant to your use.
+Replace the example filename with your backup. After restoring, sign in and
+check your planner, notes, search, import, and export.
 
 ## Update Perga
 
-The provided Compose file follows `latest` application images. Updates may include database migrations, so create and verify a backup first.
+The Compose file uses the `latest` application images. Updates may change the database, so create and check a backup first.
 
-Review changes to the [Compose template](/installation/docker-compose.yml),
-the [nginx configuration](pathname:///installation/nginx/nginx.conf), and
-the [nginx Dockerfile](pathname:///installation/nginx/Dockerfile) when updating an existing
-installation. Existing files are not overwritten by the installer: merge the
-auth limits and any trusted-proxy configuration into your local nginx config.
-The nginx recipe applies base-library security fixes on top of
-the pinned upstream image. After saving the reviewed recipe as
-`nginx/Dockerfile`, rebuild nginx explicitly as part of the update below.
+Compare your files with the latest [Compose template](/installation/docker-compose.yml),
+[nginx configuration](pathname:///installation/nginx/nginx.conf), and
+[nginx Dockerfile](pathname:///installation/nginx/Dockerfile). Merge the changes
+into your local files, keeping your proxy settings. Save the new Dockerfile as
+`nginx/Dockerfile`; the commands below rebuild nginx with its security fixes.
 
 ```bash
 mkdir -p backups
@@ -263,22 +258,24 @@ docker compose ps
 docker compose logs --tail=100 api web nginx db
 ```
 
-After updating, verify sign-in, daily and weekly planner views, agendas, notes, search, import, and export.
+After updating, check sign-in, daily and weekly plans, agendas, notes, search, import, and export.
 
-Because `latest` is a moving tag, it does not provide a reproducible rollback target. Operators who require controlled releases should pin reviewed image digests or version tags when available and retain the previous Compose configuration. A database migration may prevent an application-only downgrade; restore the matching pre-update database backup when a release requires a database rollback.
+To keep a known version for rollback, pin image digests or available version
+tags and save the previous Compose file. Older application versions may not
+work with an updated database; restore the matching backup when needed.
 
 ## Stop or remove the installation
 
-Stop and remove the containers while retaining PostgreSQL data:
+Remove the containers but keep PostgreSQL data:
 
 ```bash
 docker compose down
 ```
 
-The following command also deletes the PostgreSQL volume and all Perga data stored in it:
+To also delete the PostgreSQL volume and its data:
 
 ```bash
 docker compose down --volumes
 ```
 
-Do not use `--volumes` unless you intend to remove the data and have verified any backup you need.
+Use `--volumes` only if you want to delete the data and have checked your backup.

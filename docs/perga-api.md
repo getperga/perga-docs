@@ -15,7 +15,7 @@ The backend for Perga, a personal workspace for notes, plans, and ideas.
 
 ## Overview
 
-Perga API is a FastAPI-based backend that powers Perga. It exposes a REST API consumed by the standalone browser client [Perga Web](./perga-web).
+Perga API uses FastAPI to serve requests from [Perga Web](./perga-web) and other API clients.
 
 ## Features
 
@@ -95,12 +95,9 @@ uvicorn app.main:app --reload
 
 ## Docker
 
-A multi-stage build installs Python dependencies from wheels. The runtime image
-contains the libraries and fonts needed for PDF export and image handling,
-without compilers, development headers, pip, setuptools or wheel. To add a
-dependency, update `docs/requirements.txt` and the versions in
-`docs/constraints.txt`, then rebuild the image. The constraints keep unrelated
-transitive packages stable during security rebuilds.
+The Docker image includes PDF and image libraries, without build tools or
+package installers. To add a dependency, update `docs/requirements.txt` and
+`docs/constraints.txt`, then rebuild. The constraints keep dependency versions fixed.
 
 A Docker Compose setup is included. It runs:
 - `db`: PostgreSQL 16
@@ -142,18 +139,15 @@ Application logs go to stdout. For Compose deployments, use
 - `PUT /api/v1/auth/user/` — Update current user
 - `PUT /api/v1/auth/user/password/` — Change password
 
-API clients send the access JWT as `Authorization: Bearer …` and send the
-refresh JWT in the JSON body when refreshing or signing out. A refresh
-credential has a fixed 30-day lifetime. Signing out revokes the current
-session. Password changes and account deactivation revoke all sessions.
-Clients signed in before this change must sign in again. Google sign-in
-requires a verified email and uses an existing Google subject to identify
-a linked account.
+Send the access token as `Authorization: Bearer …`. Send the refresh token in
+the JSON body when refreshing or signing out. Refresh tokens have a fixed
+30-day lifetime. Signing out ends the current session; password changes and
+account deactivation end all sessions. Google sign-in requires a verified
+email and identifies linked accounts by Google ID.
 
-Perga Web sends `X-Perga-Session: browser` from an allowed `Origin`. Its
-login, refresh and logout requests use an HttpOnly refresh cookie. Use the
-same site for Web and API, and include the exact Web origin in
-`CORS_ORIGINS`. HTTPS deployments use a Secure cookie.
+Perga Web sends `X-Perga-Session: browser` and uses an HttpOnly refresh cookie.
+Keep Web and API on the same site, and add the exact Web origin to
+`CORS_ORIGINS`. On HTTPS, the cookie also has the Secure flag.
 
 ### Planner Days
 - `GET /api/v1/planner/days/items/?days=YYYY-MM-DD&days=YYYY-MM-DD` — Get items for multiple days; returns a dictionary keyed by date string
@@ -201,8 +195,7 @@ Agenda items:
 
 #### Notes Attachments
 
-See [Notes Attachments](./note-attachments.md) for attachment endpoints,
-local/S3 storage configuration, limits, cleanup, and portable export/import.
+See [Notes Attachments](./note-attachments.md) for endpoints, storage, limits, and cleanup.
 
 ## Development
 
@@ -232,4 +225,4 @@ alembic upgrade head
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/getperga/perga-api/blob/main/LICENSE) file for details.
+Released under the [MIT License](https://github.com/getperga/perga-api/blob/main/LICENSE).
